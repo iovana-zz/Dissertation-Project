@@ -1,0 +1,51 @@
+#mainpage {
+    height: 100%;
+    width: 100%;
+}
+
+#sidebar {
+    height: 100%;
+    width: 12%;
+    float: left;
+}
+
+
+#rightpanel {
+    height: 100%;
+    width: 88%;
+    float: right;
+}
+
+#toppanel {
+    height: 85%;
+    top: 0px;
+    margin: 0px;
+}
+
+#commentfield {
+    margin-left: 50px;
+}
+
+#submit_button {
+    /*width: 60%;*/
+    position: relative;
+    top: 50%;
+    left: 50%;
+    margin-left: 20px;
+    /*margin-right: -50%;*/
+    transform: translate(-50%, -50%)
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+
+#comment {
+    resize: none;
+}
+.comment_type {
+    margin: 0px;
+    padding: 0px;
+}

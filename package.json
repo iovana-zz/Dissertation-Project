@@ -2,7 +2,7 @@
   "name": "dissertation-project",
   "version": "0.0.0",
   "private": true,
-  "main" : "app.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
@@ -10,10 +10,12 @@
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
+    "ejs": "~1.0.0",
     "express": "~4.14.1",
     "jade": "~1.11.0",
     "morgan": "~1.7.0",
+    "semantic-ui": "^2.2.9",
     "serve-favicon": "~2.3.2",
-    "ejs": "~1.0.0"
+    "semantic-ui": "^2.1.8"
   }
 }
