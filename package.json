@@ -17,6 +17,6 @@
     "morgan": "~1.7.0",
     "semantic-ui": "^2.2.9",
     "serve-favicon": "~2.3.2",
-    "mime": "~1.2.7",
+    "mime": "~1.2.7"
   }
 }
