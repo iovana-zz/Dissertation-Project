@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node app.js"
   },
+  "engine": "node 6.9.4",
   "dependencies": {
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
@@ -18,6 +19,5 @@
     "serve-favicon": "~2.3.2",
     "mime": "~1.2.7",
     "gulp-header": "1.8.8",
-    "node":"6.9.4"
   }
 }
