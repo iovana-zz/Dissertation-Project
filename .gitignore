@@ -137,5 +137,3 @@ nbproject
 *.sublime-project
 *.sublime-workspace
 .build*
-
-/semantic
