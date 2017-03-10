@@ -15,9 +15,10 @@ app.get('/', function (req, res) {
 // });
 
 io.on('connection', function(socket){
-    console.log('a user connected');
+    socket.on('chat message', function(msg){
+        io.emit('chat message', msg);
+    });
 });
-
 
 app.get('/process_get', function (req, res) {
     // Prepare output in JSON format

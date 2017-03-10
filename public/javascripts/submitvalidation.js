@@ -35,14 +35,17 @@ var ValE, ValA, Validation = {
 
     attributes: {
         //anything that should be globally visible in the module that isn't a dom element
-        current_comment: null
+        current_comment: null,
+        socket: io()
     },
 
     // check if comment is valid and a tag is selected
     submit_button_click: function () {
         Validation.check_active_button();
-        Validation.validate_comment();
-        Validation.add_comment();
+        var validation_result = Validation.validate_comment();
+        if (typeof(validation_result) === "string") {
+            Validation.add_comment(Validation.new_comment(validation_result));
+        }
     },
 
     // validate comment by length
@@ -50,8 +53,13 @@ var ValE, ValA, Validation = {
         var text = ValE.comment_field.val();
         if (text.length < 2) {
             console.log("Message too short.");
+            return false;
         } else if (text.length > 2000) {
             console.log("Message too long");
+            return false;
+        } else {
+            ValE.comment_field.val('');
+            return text;
         }
     },
 
@@ -71,29 +79,43 @@ var ValE, ValA, Validation = {
         $(this).addClass("active");
     },
 
-    // add a new comment to the list of comments
-    add_comment: function () {
-        var comments = ValE.comment_container;
-        var text = ValE.comment_field.val();
-
+    new_comment: function (message) {
         //get the current time
         var dt = new Date();
-        var time = dt.getHours() + ":" + dt.getMinutes();
+        var second = dt.getSeconds();
+        var hour = dt.getHours();
+        var minute = dt.getMinutes();
         var dd = dt.getDate();
-        var mm = dt.getMonth()+1; //January is 0!
+        var mm = dt.getMonth() + 1; //January is 0!
         var yyyy = dt.getFullYear();
 
-        if(dd<10) {
-            dd='0'+dd;
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
         }
 
-        if(mm<10) {
-            mm='0'+mm;
-        }
+        var message_object = {
+            second: second,
+            minutes: minute,
+            hour: hour,
+            day: dd,
+            month: mm,
+            year: yyyy,
+            message: message
+        };
+        ValA.socket.emit('chat message', message_object);
+        return message_object;
+    },
 
-        var today = dd + '/'+mm+'/'+yyyy;
+    // add a new comment to the list of comments
+    add_comment: function (message) {
+        var comments = ValE.comment_container;
+        var time = message.hour + ":" + message.minutes;
+        var today = message.day + '/' + message.month + '/' + message.year;
 
-        var new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">'+ today + "   " + time + '</span></div><div class="text">' + text + '</div><div class="actions"><a class="reply">Reply</a></div></div></div>');
+        var new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span></div><div class="text">' + message.message + '</div><div class="actions"><a class="reply">Reply</a></div></div></div>');
 
         if (ValA.current_comment === null) {
             comments.html(new_comment);
@@ -102,5 +124,4 @@ var ValE, ValA, Validation = {
         }
         ValA.current_comment = new_comment;
     }
-
 };
