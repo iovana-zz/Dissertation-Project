@@ -79,19 +79,21 @@ var ValE, ValA, Validation = {
         //get the current time
         var dt = new Date();
         var time = dt.getHours() + ":" + dt.getMinutes();
+        var dd = dt.getDate();
+        var mm = dt.getMonth()+1; //January is 0!
+        var yyyy = dt.getFullYear();
 
-        var new_comment = $('<div class="comment">' +
-            //' <a class="avatar"> <img src="/images/avatar/small/matt.jpg"> </a>' +
-                '<div class="content">' +
-                    '<a class ="author">Me</a>' +
-                    '<div class="metadata">'+
-                        '<span class="date">' + time + '</span>' +
-                    '</div>' +
-                    '<div class="text">' +
-                        text +
-                    '</div>' +
-                '</div>' +
-            '</div>');
+        if(dd<10) {
+            dd='0'+dd;
+        }
+
+        if(mm<10) {
+            mm='0'+mm;
+        }
+
+        var today = dd + '/'+mm+'/'+yyyy;
+
+        var new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">'+ today + "   " + time + '</span></div><div class="text">' + text + '</div><div class="actions"><a class="reply">Reply</a></div></div></div>');
 
         if (ValA.current_comment === null) {
             comments.html(new_comment);
