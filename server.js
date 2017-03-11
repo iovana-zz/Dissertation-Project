@@ -3,7 +3,6 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
@@ -14,8 +13,11 @@ app.get('/', function (req, res) {
 //     res.sendFile( __dirname + "/" + "public/forumpage.html" );
 // });
 
+// registers a new handler for the event 'chat message'
 io.on('connection', function(socket){
+    console.log('Client connected...');
     socket.on('chat message', function(msg){
+        // send message to all connected clients
         io.emit('chat message', msg);
     });
 });

@@ -21,6 +21,7 @@ var ValE, ValA, Validation = {
         // bind jquery elements to variables
         ValE.submit_button.click(Validation.submit_button_click);
         ValE.comment_buttons.click(Validation.button_click);
+        ValA.socket.on('chat message', Validation.add_comment(msg));
     },
 
     elements: function () {
@@ -44,7 +45,7 @@ var ValE, ValA, Validation = {
         Validation.check_active_button();
         var validation_result = Validation.validate_comment();
         if (typeof(validation_result) === "string") {
-            Validation.add_comment(Validation.new_comment(validation_result));
+                Validation.add_comment(Validation.new_comment(validation_result));
         }
     },
 
