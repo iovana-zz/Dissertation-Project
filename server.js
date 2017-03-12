@@ -28,11 +28,10 @@ io.on('connection', function (socket) {
         }
         message_list.splice(insert_position, 0, msg);
 
-        for (var i = 0; i < message_list.length; i++) {
-            console.log("messages are: " + message_list[i].message);
-        }
         socket.broadcast.emit('chat message', msg);
     });
+
+    socket.emit('chat message list', message_list);
 });
 
 app.get('/process_get', function (req, res) {

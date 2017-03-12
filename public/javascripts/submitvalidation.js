@@ -24,6 +24,12 @@ var ValE, ValA, Validation = {
         ValA.socket.on('chat message', function (msg) {
             Validation.add_comment(msg);
         });
+        ValA.socket.on('chat message list', function (message_list){
+            console.log(message_list);
+           for(var i =0; i < message_list.length; ++i){
+               Validation.add_comment(message_list[i]);
+           }
+        });
     },
 
     elements: function () {
