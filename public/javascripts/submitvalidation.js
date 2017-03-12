@@ -21,7 +21,9 @@ var ValE, ValA, Validation = {
         // bind jquery elements to variables
         ValE.submit_button.click(Validation.submit_button_click);
         ValE.comment_buttons.click(Validation.button_click);
-        ValA.socket.on('chat message', Validation.add_comment(msg));
+        ValA.socket.on('chat message', function(msg) {
+            Validation.add_comment(msg);
+        });
     },
 
     elements: function () {
@@ -105,6 +107,7 @@ var ValE, ValA, Validation = {
             month: mm,
             year: yyyy,
             message: message
+            //sender
         };
         ValA.socket.emit('chat message', message_object);
         return message_object;

@@ -16,10 +16,13 @@ app.get('/', function (req, res) {
 // registers a new handler for the event 'chat message'
 io.on('connection', function(socket){
     console.log('Client connected...');
-    socket.on('chat message', function(msg){
-        // send message to all connected clients
-        io.emit('chat message', msg);
-    });
+    socket.on('chat message', function(socket){
+        var my_socket = socket;
+        return function(msg){
+            // send message to all connected clients
+            my_socket.broadcast.emit('chat message', msg);
+        }
+    }(socket));
 });
 
 app.get('/process_get', function (req, res) {
