@@ -21,7 +21,7 @@ var ValE, ValA, Validation = {
         // bind jquery elements to variables
         ValE.submit_button.click(Validation.submit_button_click);
         ValE.comment_buttons.click(Validation.button_click);
-        ValA.socket.on('chat message', function(msg) {
+        ValA.socket.on('chat message', function (msg) {
             Validation.add_comment(msg);
         });
     },
@@ -47,7 +47,7 @@ var ValE, ValA, Validation = {
         Validation.check_active_button();
         var validation_result = Validation.validate_comment();
         if (typeof(validation_result) === "string") {
-                Validation.add_comment(Validation.new_comment(validation_result));
+            Validation.add_comment(Validation.new_comment(validation_result));
         }
     },
 
@@ -92,13 +92,13 @@ var ValE, ValA, Validation = {
         var mm = dt.getMonth() + 1; //January is 0!
         var yyyy = dt.getFullYear();
 
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-
+        // create a numeric date for the timestamp
+        var timestamp = yyyy; //
+        timestamp = timestamp * 100 + mm;
+        timestamp = timestamp * 100 + dd;
+        timestamp = timestamp * 100 + hour;
+        timestamp = timestamp * 100 + minute;
+        timestamp += second;
         var message_object = {
             second: second,
             minutes: minute,
@@ -106,18 +106,27 @@ var ValE, ValA, Validation = {
             day: dd,
             month: mm,
             year: yyyy,
-            message: message
-            //sender
+            message: message,
+            timestamp: timestamp
         };
+
         ValA.socket.emit('chat message', message_object);
         return message_object;
     },
 
-    // add a new comment to the list of comments
+// add a new comment to the list of comments
     add_comment: function (message) {
         var comments = ValE.comment_container;
         var time = message.hour + ":" + message.minutes;
-        var today = message.day + '/' + message.month + '/' + message.year;
+        var day = message.day;
+        var month = message.month;
+        if (message.day < 10) {
+            day = '0' + day;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+        var today = day + '/' + month + '/' + message.year;
 
         var new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span></div><div class="text">' + message.message + '</div><div class="actions"><a class="reply">Reply</a></div></div></div>');
 
