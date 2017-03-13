@@ -21,14 +21,38 @@ var ValE, ValA, Validation = {
         // bind jquery elements to variables
         ValE.submit_button.click(Validation.submit_button_click);
         ValE.comment_buttons.click(Validation.button_click);
-        ValA.socket.on('chat message', function (msg) {
-            Validation.add_comment(msg);
+        ValA.socket.on('chat message', function (message) {
+            var element = Validation.create_jquery_object(message);
+            var message_object = {message: message, element: element};
+            var insert_position = ValA.comment_list.length;
+            var previous_comment = ValA.current_comment;
+
+            for (var i = ValA.comment_list.length - 1; i >= 0; --i) {
+                if (message.timestamp > ValA.comment_list[i].message.timestamp) {
+                    insert_position = i + 1;
+                    previous_comment = ValA.comment_list[i].element;
+                    break;
+                }
+            }
+
+            if (previous_comment === null) {
+                ValE.comment_container.html(element);
+            } else {
+                previous_comment.append(element);
+            }
+            
+            ValA.comment_list.splice(insert_position, 0, message_object);
+            if(ValA.comment_list.length === insert_position) {
+                ValA.current_comment = element;
+            }
+
         });
-        ValA.socket.on('chat message list', function (message_list){
+        // populate page with the history of messages
+        ValA.socket.on('chat message list', function (message_list) {
             console.log(message_list);
-           for(var i =0; i < message_list.length; ++i){
-               Validation.add_comment(message_list[i]);
-           }
+            for (var i = 0; i < message_list.length; ++i) {
+                Validation.add_comment(message_list[i]);
+            }
         });
     },
 
@@ -45,6 +69,7 @@ var ValE, ValA, Validation = {
     attributes: {
         //anything that should be globally visible in the module that isn't a dom element
         current_comment: null,
+        comment_list: [],
         socket: io()
     },
 
@@ -98,6 +123,7 @@ var ValE, ValA, Validation = {
         var mm = dt.getMonth() + 1; //January is 0!
         var yyyy = dt.getFullYear();
 
+
         // create a numeric date for the timestamp
         var timestamp = yyyy; //
         timestamp = timestamp * 100 + mm;
@@ -115,14 +141,11 @@ var ValE, ValA, Validation = {
             message: message,
             timestamp: timestamp
         };
-
         ValA.socket.emit('chat message', message_object);
         return message_object;
     },
 
-// add a new comment to the list of comments
-    add_comment: function (message) {
-        var comments = ValE.comment_container;
+    create_jquery_object: function (message) {
         var time = message.hour + ":" + message.minutes;
         var day = message.day;
         var month = message.month;
@@ -133,14 +156,23 @@ var ValE, ValA, Validation = {
             month = '0' + month;
         }
         var today = day + '/' + month + '/' + message.year;
-
         var new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span></div><div class="text">' + message.message + '</div><div class="actions"><a class="reply">Reply</a></div></div></div>');
+        return new_comment;
+    },
 
+    // add a new comment to the list of comments
+    add_comment: function (message) {
+        var comments = ValE.comment_container;
+        var new_comment = Validation.create_jquery_object(message);
+        var message_object = {message: message, element: new_comment};
+        ValA.comment_list.push(message_object);
         if (ValA.current_comment === null) {
             comments.html(new_comment);
         } else {
             ValA.current_comment.append(new_comment);
         }
         ValA.current_comment = new_comment;
+        // return comment_object;
     }
 };
+// create object, when receiving object from server do insertion sort, also you only get the message so you must make the jquery element too
