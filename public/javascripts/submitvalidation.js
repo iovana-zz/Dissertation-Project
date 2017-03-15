@@ -40,7 +40,7 @@ var ValE, ValA, Validation = {
             } else {
                 previous_comment.append(element);
             }
-            
+
             ValA.comment_list.splice(insert_position, 0, message_object);
             if(ValA.comment_list.length === insert_position) {
                 ValA.current_comment = element;
@@ -139,6 +139,7 @@ var ValE, ValA, Validation = {
             month: mm,
             year: yyyy,
             message: message,
+            type: Validation.check_active_button(),
             timestamp: timestamp
         };
         ValA.socket.emit('chat message', message_object);
@@ -149,6 +150,8 @@ var ValE, ValA, Validation = {
         var time = message.hour + ":" + message.minutes;
         var day = message.day;
         var month = message.month;
+        var comment_type = message.type.trim();
+        var new_comment;
         if (message.day < 10) {
             day = '0' + day;
         }
@@ -156,7 +159,12 @@ var ValE, ValA, Validation = {
             month = '0' + month;
         }
         var today = day + '/' + month + '/' + message.year;
-        var new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span></div><div class="text">' + message.message + '</div><div class="actions"><a class="reply">Reply</a></div></div></div>');
+        console.log(comment_type === "comment");
+        if(comment_type === "comment") {
+            new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text">' + message.message + '</div><div class="actions"></div></div></div>');
+        } else {
+            new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text">' + message.message + '</div><div class="actions"></div></div><div class="ui button icon star_button"><i class="icon star big"></i></div></div>');
+        }
         return new_comment;
     },
 

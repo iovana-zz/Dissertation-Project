@@ -47,7 +47,30 @@
 #comment {
     resize: none;
 }
+
 .comment_type {
     margin: 0px;
     padding: 0px;
+}
+.star_button {
+    width: 50px;
+    height: 100%;
+    margin: 0px;
+    padding: 10px;
+}
+
+.content {
+    width: calc(100% - 50px);
+    height: 100%;
+    float: left;
+    margin: 0px;
+}
+
+.comment {
+    width: 100%;
+    height: 60px;
+}
+
+.ui.large.comments {
+    width: 100%;
 }
