@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var pg = require('pg'); // postgresql database
 var message_list = [];
+var conString = process.env.DATABASE_URL || "postgres://postgres:Welcome123@localhost:5432/postgres";
 
 app.use(express.static('public'));
 
@@ -16,7 +17,7 @@ app.get('/', function (req, res) {
 // });
 
 app.get('/db', function (request, response) {
-    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+    pg.connect(conString, function (err, client, done) {
         client.query('SELECT * FROM test_table', function (err, result) {
             done();
             if(err) {
