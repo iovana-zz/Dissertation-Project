@@ -18,7 +18,7 @@ app.get('/', function (req, res) {
 
 app.get('/db', function (request, response) {
     pg.connect(conString, function (err, client, done) {
-        client.query('SELECT * FROM test_table', function (err, result) {
+        client.query('SELECT * FROM user_table', function (err, result) {
             done();
             if(err) {
                 console.error(err);
