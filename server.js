@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var pg = require('pg'); // postgresql database
 var message_list = [];
 
 app.use(express.static('public'));
@@ -13,6 +14,21 @@ app.get('/', function (req, res) {
 // app.get('/forum.html', function (req, res) {
 //     res.sendFile( __dirname + "/" + "public/forumpage.html" );
 // });
+
+app.get('/db', function (request, response) {
+    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+        client.query('SELECT * FROM test_table', function (err, result) {
+            done();
+            if(err) {
+                console.error(err);
+                response.send("Error " + err);
+            } else {
+                response.render('pages/db', {results: result.rows});
+            }
+        });
+    });
+});
+
 
 // registers a new handler for the event 'chat message'
 io.on('connection', function (socket) {
