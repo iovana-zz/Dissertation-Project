@@ -4,19 +4,16 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var pg = require('pg'); // postgresql database
 var message_list = [];
-//var conString = process.env.DATABASE_URL || "postgres://postgres:Welcome123@localhost:5432/postgres";
-//var DATABASE_URL = "postgres://polar-harbor-57764?ssl=true";
 
-var DB_URL = "postgres://nszdfxsojayksc:a5195fe00d5a883e7fc3cca3616c02146d7c355b61efc6c7ba23bac3967b03ea@ec2-54-204-32-145.compute-1.amazonaws.com:5432/dgvjap4i2poha";
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + "/" + "public/forumpage.html");
+    res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
 
-// app.get('/forum.html', function (req, res) {
-//     res.sendFile( __dirname + "/" + "public/forumpage.html" );
-// });
+app.get('/forum.html', function (req, res) {
+    res.sendFile( __dirname + "/" + "public/forumpage.html" );
+});
 
 app.get('/db', function (request, response) {
     pg.connect(process.env.DATABASE_URL, function (err, client, done) {

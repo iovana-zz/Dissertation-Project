@@ -3,9 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Iovana's Project</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.8/semantic.min.css">
     <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.8/semantic.min.js"></script>
     <link rel="stylesheet" type="text/css" href="stylesheets/loginstyle.css">
+    <script src="javascripts/loginvalidation.js"></script>
 </head>
 
 <body>
@@ -18,19 +25,19 @@
         </div>
 
         <!-- login form-->
-        <form class="ui large form" action = "http://127.0.0.1:8080/process_get" method = "GET">
+        <form class="ui large form" action="http://127.0.0.1:8080/process_get" method="GET">
             <div class="ui stacked segment">
-                <div class="field">
+                <div class="field" id="username">
                     <label class="fluid center aligned">Username</label>
                     <input type="text" name="username" placeholder="Username">
                 </div>
 
-                <div class="field">
+                <div class="field" id="password">
                     <label class="fluid center aligned">Password</label>
                     <input type="text" name="password" placeholder="Password">
                 </div>
 
-                <button class="ui submit button aligned right fluid" input type="submit">SUBMIT</button>
+                <button class="ui submit button aligned right fluid" id="login_button">LOGIN</button>
             </div>
 
         </form>
