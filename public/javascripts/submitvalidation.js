@@ -2,8 +2,8 @@
  * Created by Iovana on 25/02/2017.
  */
 
-// create the validation on the comment
-// if validation and comment is okay then allow submit and add a new html element
+// create the validation on the message_field
+// if validation and message_field is okay then allow submit and add a new html element
 
 $(document).ready(function () {
     Validation.init();
@@ -38,7 +38,7 @@ var ValE, ValA, Validation = {
             if (previous_comment === null) {
                 ValE.comment_container.html(element);
             } else {
-                previous_comment.append(element);
+                previous_comment.after(element);
             }
 
             ValA.comment_list.splice(insert_position, 0, message_object);
@@ -60,7 +60,7 @@ var ValE, ValA, Validation = {
         return {
             // list jquery variables
             submit_button: $("#submit_button"),
-            comment_field: $("#comment"),
+            comment_field: $("#message_field"),
             comment_buttons: $(".comment_type"),
             comment_container: $("#comment_list")
         }
@@ -73,7 +73,7 @@ var ValE, ValA, Validation = {
         socket: io()
     },
 
-    // check if comment is valid and a tag is selected
+    // check if message_field is valid and a tag is selected
     submit_button_click: function () {
         Validation.check_active_button();
         var validation_result = Validation.validate_comment();
@@ -82,7 +82,7 @@ var ValE, ValA, Validation = {
         }
     },
 
-    // validate comment by length
+    // validate message_field by length
     validate_comment: function () {
         var text = ValE.comment_field.val();
         if (text.length < 2) {
@@ -102,7 +102,7 @@ var ValE, ValA, Validation = {
         var buttons = ValE.comment_buttons;
         for (var i = 0; i < buttons.length; i++) {
             if ($(buttons[i]).hasClass("active")) {
-                return buttons[i].innerHTML;
+                return $(buttons[i]).attr("id");
             }
         }
     },
@@ -130,7 +130,9 @@ var ValE, ValA, Validation = {
         timestamp = timestamp * 100 + dd;
         timestamp = timestamp * 100 + hour;
         timestamp = timestamp * 100 + minute;
-        timestamp += second;
+        timestamp = timestamp * 100 + second;
+        var type = Validation.check_active_button();
+        console.log(type);
         var message_object = {
             second: second,
             minutes: minute,
@@ -139,7 +141,7 @@ var ValE, ValA, Validation = {
             month: mm,
             year: yyyy,
             message: message,
-            type: Validation.check_active_button(),
+            message_type: type,
             timestamp: timestamp
         };
         ValA.socket.emit('chat message', message_object);
@@ -150,7 +152,7 @@ var ValE, ValA, Validation = {
         var time = message.hour + ":" + message.minutes;
         var day = message.day;
         var month = message.month;
-        var comment_type = message.type.trim();
+        var comment_type = message.message_type;
         var new_comment;
         if (message.day < 10) {
             day = '0' + day;
@@ -159,16 +161,16 @@ var ValE, ValA, Validation = {
             month = '0' + month;
         }
         var today = day + '/' + month + '/' + message.year;
-        console.log(comment_type === "comment");
         if(comment_type === "comment") {
-            new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text">' + message.message + '</div><div class="actions"></div></div></div>');
+            new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text">' + message.message + '</div></div></div>');
         } else {
-            new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text">' + message.message + '</div><div class="actions"></div></div><div class="ui button icon star_button"><i class="icon star big"></i></div></div>');
+            console.log("1");
+            new_comment = $('<div class="comment"><div class="content"><a class="author">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text">' + message.message + '</div></div><div class="ui button icon star_button"><i class="icon star big"></i></div></div>');
         }
         return new_comment;
     },
 
-    // add a new comment to the list of comments
+    // add a new message_field to the list of comments
     add_comment: function (message) {
         var comments = ValE.comment_container;
         var new_comment = Validation.create_jquery_object(message);
@@ -177,7 +179,7 @@ var ValE, ValA, Validation = {
         if (ValA.current_comment === null) {
             comments.html(new_comment);
         } else {
-            ValA.current_comment.append(new_comment);
+            ValA.current_comment.after(new_comment);
         }
         ValA.current_comment = new_comment;
         // return comment_object;

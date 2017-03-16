@@ -44,7 +44,7 @@
     overflow: hidden;
 }
 
-#comment {
+#message_field {
     resize: none;
 }
 
@@ -52,7 +52,7 @@
     margin: 0px;
     padding: 0px;
 }
-.star_button {
+.ui.button.icon.star_button {
     width: 50px;
     height: 100%;
     margin: 0px;
