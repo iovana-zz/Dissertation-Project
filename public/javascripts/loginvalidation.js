@@ -15,8 +15,8 @@ var ValE, ValA, Login = {
     bind: function () {
         ValE.login_button.click(Login.login_button_click);
 
-        ValA.socket.on('login', function (user) {
-
+        ValA.socket.on('validation', function () {
+           window.location.replace("/public/forumpage.html");
         });
     },
     elements: function () {
@@ -39,7 +39,7 @@ var ValE, ValA, Login = {
     // validate message_field by length
     validate_login: function () {
         var username = ValE.username_field.val();
-        var password = ValE.username_field.val();
+        var password = ValE.password_field.val();
         var user = {username: username, password: password};
 
         if (password.length < 2 || username.length < 2) {

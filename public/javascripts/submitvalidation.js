@@ -2,9 +2,6 @@
  * Created by Iovana on 25/02/2017.
  */
 
-// create the validation on the message_field
-// if validation and message_field is okay then allow submit and add a new html element
-
 $(document).ready(function () {
     Validation.init();
 });
@@ -67,7 +64,6 @@ var ValE, ValA, Validation = {
     },
 
     attributes: {
-        //anything that should be globally visible in the module that isn't a dom element
         current_comment: null,
         comment_list: [],
         socket: io()

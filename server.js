@@ -11,20 +11,8 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
 
-
-app.get('/db', function (request, response) {
-    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
-        client.query('SELECT * FROM user_table', function (err, result) {
-            done();
-            if (err) {
-                console.error(err);
-                response.send("Error " + err);
-            } else {
-                console.log(result.rows);
-                // response.render('pages/db', {results: result.rows});
-            }
-        });
-    });
+app.get('/forum.html', function (req, res) {
+    res.sendFile(__dirname + "/" + "public/forumpage.html");
 });
 
 
@@ -45,28 +33,38 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('chat message', msg);
     });
     socket.on('login', function (login_details) {
-        var name = login_details.username.toString();
+        var name = login_details.username;
         var key = login_details.password;
         pg.connect(process.env.DATABASE_URL, function (err, client, done) {
             // select the username and the password if they exist
-            client.query('SELECT username, password FROM user_table WHERE username=name AND password=key;', function (err, result) {
+            var sql = 'SELECT username, password FROM user_table WHERE username=$1 AND password=$2;'
+            var params = [name, key];
+            client.query(sql, params, function (err, result) {
                 done();
                 if (err) {
-                    // if there are no instances yet then insert in database
-                    client.query('insert into user_table values (name, key);', function (err, result) {
-                        done();
-                        if (err) {
-                            console.error(err);
-                        } else {
-                            console.log("done");
-                        }
-                    });
+                    console.error(err);
                 } else {
-                    app.get('/forum.html', function (req, res) {
-                        res.sendFile(__dirname + "/" + "public/forumpage.html");
-                    });
+                    if (result.rowCount === 0) {
+                        insert_user(client);
+                    } else {
+                        console.log(result.rows[0]);
+                    }
+                    socket.emit('validated');
                 }
             });
+            function insert_user(client) {
+                sql = 'INSERT INTO user_table (username, password) VALUES ($1, $2)';
+                console.log(name + " " + key);
+                params = [name, key];
+                client.query(sql, params, function (err, result) {
+                    done();
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log(result);
+                    }
+                });
+            }
         });
     });
 
