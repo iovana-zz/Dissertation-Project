@@ -12,15 +12,13 @@
     <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.8/semantic.min.js"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.8/semantic.min.css">
-    <link rel="stylesheet" type="text/css" href="stylesheets/loginstyle.css">
     <link rel="stylesheet" type="text/css" href="stylesheets/forumstyle.css">
 
     <script src="javascripts/loginvalidation.js"></script>
-    <script src="javascripts/submitvalidation.js"></script>
 </head>
 
 <body>
-<div class="ui middle aligned center aligned grid">
+<div class="ui middle aligned center aligned grid" id="login_page">
     <div class="column">
         <!-- headers -->
         <div class="ui large header inverted" id="mainheader">
@@ -40,10 +38,8 @@
                     <label class="fluid center aligned">Password</label>
                     <input type="text" name="password" placeholder="Password" id="password">
                 </div>
-
-                <button class="ui submit button aligned right fluid" id="login_button">LOGIN</button>
+                <div class="ui button aligned right fluid" id="login_button">LOGIN</div>
             </div>
-
         </form>
     </div>
 </div>

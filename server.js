@@ -49,7 +49,9 @@ io.on('connection', function (socket) {
                     } else {
                         console.log(result.rows[0]);
                     }
-                    socket.emit('validated');
+                    // send message list after the login details are validated
+                    console.log(name + " " + key);
+                    socket.emit('validated', message_list);
                 }
             });
             function insert_user(client) {
@@ -67,8 +69,6 @@ io.on('connection', function (socket) {
             }
         });
     });
-
-    socket.emit('chat message list', message_list);
 });
 
 var port = process.env.PORT || 8080;
