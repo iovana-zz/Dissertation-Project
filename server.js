@@ -11,15 +11,12 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
 
-app.get('/forum.html', function (req, res) {
-    res.sendFile( __dirname + "/" + "public/forumpage.html" );
-});
 
 app.get('/db', function (request, response) {
     pg.connect(process.env.DATABASE_URL, function (err, client, done) {
         client.query('SELECT * FROM user_table', function (err, result) {
             done();
-            if(err) {
+            if (err) {
                 console.error(err);
                 response.send("Error " + err);
             } else {
@@ -47,18 +44,33 @@ io.on('connection', function (socket) {
 
         socket.broadcast.emit('chat message', msg);
     });
+    socket.on('login', function (login_details) {
+        var name = login_details.username.toString();
+        var key = login_details.password;
+        pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+            // select the username and the password if they exist
+            client.query('SELECT username, password FROM user_table WHERE username=name AND password=key;', function (err, result) {
+                done();
+                if (err) {
+                    // if there are no instances yet then insert in database
+                    client.query('insert into user_table values (name, key);', function (err, result) {
+                        done();
+                        if (err) {
+                            console.error(err);
+                        } else {
+                            console.log("done");
+                        }
+                    });
+                } else {
+                    app.get('/forum.html', function (req, res) {
+                        res.sendFile(__dirname + "/" + "public/forumpage.html");
+                    });
+                }
+            });
+        });
+    });
 
     socket.emit('chat message list', message_list);
-});
-
-app.get('/process_get', function (req, res) {
-    // Prepare output in JSON format
-    response = {
-        username: req.query.username,
-        password: req.query.password
-    };
-    console.log(response);
-    res.end(JSON.stringify(response));
 });
 
 var port = process.env.PORT || 8080;

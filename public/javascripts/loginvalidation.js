@@ -2,17 +2,20 @@
  * Created by Iovana on 16/03/2017.
  */
 $(document).ready(function () {
-    Validation.init();
+    Login.init();
 });
 
-var ValE, Validation = {
+var ValE, ValA, Login = {
     init: function () {
         // initialising elements
-        ValE = Validation.elements();
-        Validation.bind();
+        ValE = Login.elements();
+        ValA = Login.attributes;
+        Login.bind();
     },
     bind: function () {
-        ValA.socket.on('login', function (message) {
+        ValE.login_button.click(Login.login_button_click);
+
+        ValA.socket.on('login', function (user) {
 
         });
     },
@@ -29,9 +32,8 @@ var ValE, Validation = {
 
     // check if message_field is valid and a tag is selected
     login_button_click: function () {
-        Validation.validate_login();
-        var user = Validation.validate_comment();
-
+        var user_object = Login.validate_login();
+        ValA.socket.emit('login', user_object);
     },
 
     // validate message_field by length
