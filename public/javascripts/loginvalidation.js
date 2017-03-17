@@ -16,7 +16,8 @@ var ValE, ValA, Login = {
         ValE.login_button.click(Login.login_button_click);
 
         ValA.socket.on('validation', function () {
-           window.location.replace("/public/forumpage.html");
+           window.location.replace("Dissertation Project\public\forumpage.html");
+
         });
     },
     elements: function () {
