@@ -46,11 +46,6 @@ io.on('connection', function (socket) {
                     if (result.rowCount === 0) {
                         insert_user(client);
                     }
-                    // else {
-                    //     console.log(result.rows[0]);
-                    // }
-                    // send message list after the login details are validated
-                    // console.log(name + " " + key);
                     socket.emit('validated', message_list);
                 }
             });
@@ -63,28 +58,26 @@ io.on('connection', function (socket) {
                     if (err) {
                         console.error(err);
                     }
-                    // else {
-                    //     console.log(result);
-                    // }
                 });
             }
         });
     });
     socket.on('vote', function(timestamp, author, upvote) {
+        console.log(author + " " + timestamp + " " +upvote);
         // find message in the list
-        // check if the event is to upvote or downvote
         for(var i=0; i < message_list.length; i++) {
             if(message_list[i].author === author && message_list[i].timestamp === timestamp) {
+                console.log("potato");
+                // check if the event is to upvote or downvote
                 if(upvote === true) {
                     message_list[i].rating++;
                 } else if (upvote === false) {
                     message_list[i].rating--;
                 }
+                console.log(message_list[i].rating);
+                break;
             }
         }
-        console.log(message.rating);
-        // in case I want to show the upvotes to the client
-        // socket.broadcast.emit('vote', timestamp, author, rating);
     });
 
 });

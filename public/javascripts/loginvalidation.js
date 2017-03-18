@@ -49,12 +49,8 @@ var ValE, ValA, Validation = {
             for (var i = 0; i < message_list.length; ++i) {
                 Validation.add_comment(message_list[i]);
             }
+            ValE.submit_button.disabled = false;
         });
-
-        // in case I want to broadcast the number of upvotes for each message to the clients
-        // ValA.socket.on('vote', function(timestamp, author, upvote) {
-        //
-        // });
     },
     elements: function () {
         return {
@@ -80,7 +76,10 @@ var ValE, ValA, Validation = {
     // check if message_field is valid and a tag is selected
     login_button_click: function () {
         var user_object = Validation.validate_login();
-        ValA.socket.emit('login', user_object);
+        if(user_object !== false) {
+            ValA.socket.emit('login', user_object);
+            ValE.submit_button.disabled = true;
+        }
     },
 
     // validate message_field by length
@@ -178,18 +177,13 @@ var ValE, ValA, Validation = {
 
     // find corresponding message, send to server and then either upvote or downvote
     upvote_button: function (button, timestamp, author) {
-        for (var i = 0; i < ValA.comment_list.length; i++) {
-            if (ValA.comment_list[i].message.author === author && ValA.comment_list[i].message.timestamp === timestamp) {
-                if ($(button).hasClass("grey_button")) {
-                    ValA.socket.emit('vote', timestamp, author, true);
-                }
-                else if ($(button).hasClass("golden_button")) {
-                    ValA.socket.emit('vote', timestamp, author, false);
-                }
-
-            }
-
+        if ($(button).hasClass("grey_button")) {
+            ValA.socket.emit('vote', timestamp, author, true);
         }
+        else if ($(button).hasClass("golden_button")) {
+            ValA.socket.emit('vote', timestamp, author, false);
+        }
+
         $(button).toggleClass("golden_button");
         $(button).toggleClass("grey_button");
     },
