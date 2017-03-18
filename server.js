@@ -21,7 +21,6 @@ io.on('connection', function (socket) {
     console.log('Client connected...');
     socket.on('chat message', function (msg) {
         var insert_position = 0;
-
         for (var i = message_list.length - 1; i >= 0; --i) {
             if (msg.timestamp > message_list[i].timestamp) {
                 insert_position = i + 1;
@@ -46,11 +45,12 @@ io.on('connection', function (socket) {
                 } else {
                     if (result.rowCount === 0) {
                         insert_user(client);
-                    } else {
-                        console.log(result.rows[0]);
                     }
+                    // else {
+                    //     console.log(result.rows[0]);
+                    // }
                     // send message list after the login details are validated
-                    console.log(name + " " + key);
+                    // console.log(name + " " + key);
                     socket.emit('validated', message_list);
                 }
             });
@@ -62,13 +62,31 @@ io.on('connection', function (socket) {
                     done();
                     if (err) {
                         console.error(err);
-                    } else {
-                        console.log(result);
                     }
+                    // else {
+                    //     console.log(result);
+                    // }
                 });
             }
         });
     });
+    socket.on('vote', function(timestamp, author, upvote) {
+        // find message in the list
+        // check if the event is to upvote or downvote
+        for(var i=0; i < message_list.length; i++) {
+            if(message_list[i].author === author && message_list[i].timestamp === timestamp) {
+                if(upvote === true) {
+                    message_list[i].rating++;
+                } else if (upvote === false) {
+                    message_list[i].rating--;
+                }
+            }
+        }
+        console.log(message.rating);
+        // in case I want to show the upvotes to the client
+        // socket.broadcast.emit('vote', timestamp, author, rating);
+    });
+
 });
 
 var port = process.env.PORT || 8080;

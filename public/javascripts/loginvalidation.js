@@ -23,25 +23,22 @@ var ValE, ValA, Validation = {
             var insert_position = ValA.comment_list.length;
             var previous_comment = ValA.current_comment;
 
-            for (var i = ValA.comment_list.length - 1; i >= 0; --i) {
-                if (message.timestamp > ValA.comment_list[i].message.timestamp) {
-                    insert_position = i + 1;
-                    previous_comment = ValA.comment_list[i].element;
-                    break;
-                }
-            }
-
             if (previous_comment === null) {
                 ValE.comment_container.html(element);
             } else {
-                previous_comment.after(element);
+                for (var i = ValA.comment_list.length - 1; i >= 0; --i) {
+                    if (message.timestamp > ValA.comment_list[i].message.timestamp) {
+                        console.log("new message is: " + message.message + " " + message.timestamp);
+                        insert_position = i + 1;
+                        ValA.comment_list.splice(insert_position, 0, message_object);
+                        ValA.comment_list[i].element.after(element);
+                        console.log("previous message is: ");
+                        console.log($(previous_comment));
+                        break;
+                    }
+                }
             }
-
-            ValA.comment_list.splice(insert_position, 0, message_object);
-            if (ValA.comment_list.length === insert_position) {
-                ValA.current_comment = element;
-            }
-
+            ValA.current_comment = ValA.comment_list[ValA.comment_list.length-1];
         });
         // populate page with the history of messages
         ValA.socket.on('validated', function (message_list) {
@@ -53,6 +50,11 @@ var ValE, ValA, Validation = {
                 Validation.add_comment(message_list[i]);
             }
         });
+
+        // in case I want to broadcast the number of upvotes for each message to the clients
+        // ValA.socket.on('vote', function(timestamp, author, upvote) {
+        //
+        // });
     },
     elements: function () {
         return {
@@ -147,7 +149,6 @@ var ValE, ValA, Validation = {
         var mm = dt.getMonth() + 1; //January is 0!
         var yyyy = dt.getFullYear();
         var author = ValE.username_field.val();
-        var rating;
 
         // creates the message object with time, author, text, rating
         var timestamp = yyyy; //
@@ -169,7 +170,7 @@ var ValE, ValA, Validation = {
             message_type: type,
             timestamp: timestamp,
             author: author,
-            rating: rating
+            rating: 0
         };
         ValA.socket.emit('chat message', message_object);
         return message_object;
@@ -177,8 +178,6 @@ var ValE, ValA, Validation = {
 
     // find corresponding message, send to server and then either upvote or downvote
     upvote_button: function (button, timestamp, author) {
-        var upvote;
-        var rating;
         for (var i = 0; i < ValA.comment_list.length; i++) {
             if (ValA.comment_list[i].author === author && ValA.comment_list[i].timestamp === timestamp) {
                 if ($(button).hasClass("grey_button")) {
@@ -188,10 +187,13 @@ var ValE, ValA, Validation = {
                     ValA.socket.emit('vote', timestamp, author, false);
                 }
 
+            }
+
         }
         $(button).toggleClass("golden_button");
         $(button).toggleClass("grey_button");
     },
+
 
     create_jquery_object: function (message) {
         var time = message.hour + ":" + message.minutes;
