@@ -179,7 +179,7 @@ var ValE, ValA, Validation = {
     // find corresponding message, send to server and then either upvote or downvote
     upvote_button: function (button, timestamp, author) {
         for (var i = 0; i < ValA.comment_list.length; i++) {
-            if (ValA.comment_list[i].author === author && ValA.comment_list[i].timestamp === timestamp) {
+            if (ValA.comment_list[i].message.author === author && ValA.comment_list[i].message.timestamp === timestamp) {
                 if ($(button).hasClass("grey_button")) {
                     ValA.socket.emit('vote', timestamp, author, true);
                 }
@@ -193,7 +193,6 @@ var ValE, ValA, Validation = {
         $(button).toggleClass("golden_button");
         $(button).toggleClass("grey_button");
     },
-
 
     create_jquery_object: function (message) {
         var time = message.hour + ":" + message.minutes;
@@ -210,9 +209,27 @@ var ValE, ValA, Validation = {
         }
         var today = day + '/' + month + '/' + message.year;
         if (comment_type === "comment") {
-            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author + '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div></div>');
+            new_comment = $('<div class="comment">' +
+                '<div class="content">' +
+                '<a class="author comment_username">' + author + '</a>' +
+                '<div class="metadata">' +
+                '<span class="date">' + today + "   " + time + '</span>' +
+                '<div>' + comment_type + '</div>' +
+                '</div>' +
+                '<div class="text comment_text">' + message.message + '</div></div></div>');
         } else {
-            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author + '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div><div class="ui button icon star_button" ><i class="grey_button icon star big" onclick="Validation.upvote_button(this, ' + message.timestamp + ', \"' + author + '\")"></i></div></div>');
+            new_comment = $('<div class="comment">' +
+                '<div class="content">' +
+                '<a class="author comment_username">' + author + '</a>' +
+                '<div class="metadata">' +
+                '<span class="date">' + today + "   " + time + '</span>' +
+                '<div class="rating"></div>' +
+                '<div>' + comment_type + '</div></div>' +
+                '<div class="text comment_text">' + message.message + '</div></div>' +
+                '<div class="ui button icon star_button">' +
+                '<i class="icon star big grey_button" onclick="Validation.upvote_button(this,' + message.timestamp + ',\'' + author.toString() + '\')"></i>' +
+                '</div></div>');
+
         }
         return new_comment;
     },
