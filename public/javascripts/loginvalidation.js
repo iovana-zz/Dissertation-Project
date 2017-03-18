@@ -146,17 +146,17 @@ var ValE, ValA, Validation = {
         var dd = dt.getDate();
         var mm = dt.getMonth() + 1; //January is 0!
         var yyyy = dt.getFullYear();
+        var author = ValE.username_field.val();
 
-
-        // create a numeric date for the timestamp
+        // creates the message object with time, author, text, rating
         var timestamp = yyyy; //
+        // create a numeric date for the timestamp
         timestamp = timestamp * 100 + mm;
         timestamp = timestamp * 100 + dd;
         timestamp = timestamp * 100 + hour;
         timestamp = timestamp * 100 + minute;
         timestamp = timestamp * 100 + second;
         var type = Validation.check_active_button();
-        console.log(type);
         var message_object = {
             second: second,
             minutes: minute,
@@ -166,10 +166,17 @@ var ValE, ValA, Validation = {
             year: yyyy,
             message: message,
             message_type: type,
-            timestamp: timestamp
+            timestamp: timestamp,
+            author: author
         };
         ValA.socket.emit('chat message', message_object);
         return message_object;
+    },
+
+    change_upvote_colour: function(button) {
+        $(button).toggleClass("golden_button");
+        $(button).toggleClass("grey_button");
+
     },
 
     create_jquery_object: function (message) {
@@ -178,6 +185,7 @@ var ValE, ValA, Validation = {
         var month = message.month;
         var comment_type = message.message_type;
         var new_comment;
+        var author = message.author;
         if (message.day < 10) {
             day = '0' + day;
         }
@@ -186,9 +194,9 @@ var ValE, ValA, Validation = {
         }
         var today = day + '/' + month + '/' + message.year;
         if (comment_type === "comment") {
-            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div></div>');
+            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author+ '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div></div>');
         } else {
-            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">Me</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div><div class="ui button icon star_button"><i class="icon star big"></i></div></div>');
+            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author+ '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div><div class="ui button icon star_button" ><i class="grey_button icon star big" onclick="Validation.change_upvote_colour(this)"></i></div></div>');
         }
         return new_comment;
     },

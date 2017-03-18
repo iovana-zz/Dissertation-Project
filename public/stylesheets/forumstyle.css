@@ -101,3 +101,11 @@ body > .grid {
 .ui.large.comments {
     width: 100%;
 }
+
+.golden_button {
+    color: gold;
+}
+
+.grey_button {
+    color: grey;
+}
