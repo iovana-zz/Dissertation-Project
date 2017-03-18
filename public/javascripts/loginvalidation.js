@@ -23,22 +23,22 @@ var ValE, ValA, Validation = {
             var insert_position = ValA.comment_list.length;
             var previous_comment = ValA.current_comment;
 
+            // if there is no previous comment insert it in the container
             if (previous_comment === null) {
                 ValE.comment_container.html(element);
+                ValA.comment_list.push(message_object);
             } else {
+                // if there is a previous comment, find where to insert it and insert it
                 for (var i = ValA.comment_list.length - 1; i >= 0; --i) {
                     if (message.timestamp > ValA.comment_list[i].message.timestamp) {
-                        console.log("new message is: " + message.message + " " + message.timestamp);
                         insert_position = i + 1;
                         ValA.comment_list.splice(insert_position, 0, message_object);
-                        ValA.comment_list[i].element.after(element);
-                        console.log("previous message is: ");
-                        console.log($(previous_comment));
+                        $(ValA.comment_list[i].element).after(element);
                         break;
                     }
                 }
             }
-            ValA.current_comment = ValA.comment_list[ValA.comment_list.length-1];
+            ValA.current_comment = ValA.comment_list[ValA.comment_list.length - 1].element;
         });
         // populate page with the history of messages
         ValA.socket.on('validated', function (message_list) {
@@ -212,7 +212,7 @@ var ValE, ValA, Validation = {
         if (comment_type === "comment") {
             new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author + '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div></div>');
         } else {
-            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author + '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div><div class="ui button icon star_button" ><i class="grey_button icon star big" onclick="Validation.upvote_button(this, ' + message.timestamp + ', ' + message.author + ')"></i></div></div>');
+            new_comment = $('<div class="comment"><div class="content"><a class="author comment_username">' + author + '</a><div class="metadata"><span class="date">' + today + "   " + time + '</span><div class="rating"><i class="star icon"></i>5 stars</div><div>' + comment_type + '</div></div> <div class="text comment_text">' + message.message + '</div></div><div class="ui button icon star_button" ><i class="grey_button icon star big" onclick="Validation.upvote_button(this, ' + message.timestamp + ', \"' + author + '\")"></i></div></div>');
         }
         return new_comment;
     },
