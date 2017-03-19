@@ -4,19 +4,14 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var pg = require('pg'); // postgresql database
 var message_list = [];
-
+var threshold = 5;
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
 
-app.get('/forum.html', function (req, res) {
-    res.sendFile(__dirname + "/" + "public/forumpage.html");
-});
-
-
-// registers a new handler for the event 'chat message'
+// listen for connection
 io.on('connection', function (socket) {
     console.log('Client connected...');
     socket.on('chat message', function (msg) {
@@ -38,20 +33,34 @@ io.on('connection', function (socket) {
             // select the username and the password if they exist
             var sql = 'SELECT username, password FROM user_table WHERE username=$1 AND password=$2;'
             var params = [name, key];
+            // lecturer has username and password assigned beforehand
             client.query(sql, params, function (err, result) {
                 done();
                 if (err) {
                     console.error(err);
                 } else {
+                    var messages_to_send = [];
+                    // only send messages with threshold
+                    if(name === "lecturer" && key === "comp-module") {
+                        socket.lecturer = true;
+                        for(var i = 0; i < message_list.length; i++) {
+                            // current threshold is 5
+                            if(message_list[i].rating >= threshold) {
+                                messages_to_send.push(message_list[i]);
+                            }
+                        }
+                    } else {
+                        socket.lecturer = false;
+                        messages_to_send = message_list;
+                    }
                     if (result.rowCount === 0) {
                         insert_user(client);
                     }
-                    socket.emit('validated', message_list);
+                    socket.emit('validated', messages_to_send);
                 }
             });
             function insert_user(client) {
                 sql = 'INSERT INTO user_table (username, password) VALUES ($1, $2)';
-                console.log(name + " " + key);
                 params = [name, key];
                 client.query(sql, params, function (err, result) {
                     done();
@@ -69,9 +78,9 @@ io.on('connection', function (socket) {
             if(message_list[i].author === author && message_list[i].timestamp === timestamp) {
                 console.log("potato");
                 // check if the event is to upvote or downvote
-                if(upvote === true) {
+                if(upvote) {
                     message_list[i].rating++;
-                } else if (upvote === false) {
+                } else {
                     message_list[i].rating--;
                 }
                 console.log(message_list[i].rating);
