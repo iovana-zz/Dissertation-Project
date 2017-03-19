@@ -41,21 +41,25 @@ io.on('connection', function (socket) {
                 } else {
                     var messages_to_send = [];
                     // only send messages with threshold
-                    if(name === "lecturer" && key === "comp-module") {
+                    if (name === "lecturer" && key === "comp-module") {
                         socket.lecturer = true;
-                        for(var i = 0; i < message_list.length; i++) {
+                        for (var i = 0; i < message_list.length; i++) {
                             // current threshold is 5
-                            if(message_list[i].rating >= threshold) {
+                            if (message_list[i].rating >= threshold) {
                                 messages_to_send.push(message_list[i]);
                             }
                         }
                     } else {
                         socket.lecturer = false;
+                        console.log("message list contains: ");
+                        console.log(message_list);
                         messages_to_send = message_list;
                     }
                     if (result.rowCount === 0) {
                         insert_user(client);
                     }
+                    console.log("messages to send are:");
+                    console.log(messages_to_send);
                     socket.emit('validated', messages_to_send);
                 }
             });
@@ -71,22 +75,38 @@ io.on('connection', function (socket) {
             }
         });
     });
-    socket.on('vote', function(timestamp, author, upvote) {
-        console.log(author + " " + timestamp + " " +upvote);
+
+
+    socket.on('vote', function (timestamp, author, upvote) {
+        console.log(author + " " + timestamp + " " + upvote);
         // find message in the list
-        for(var i=0; i < message_list.length; i++) {
-            if(message_list[i].author === author && message_list[i].timestamp === timestamp) {
-                console.log("potato");
+        for (var i = 0; i < message_list.length; i++) {
+            if (message_list[i].author === author && message_list[i].timestamp === timestamp) {
                 // check if the event is to upvote or downvote
-                if(upvote) {
+                if (upvote) {
                     message_list[i].rating++;
                 } else {
-                    message_list[i].rating--;
+                    // if a message reached the threshold the message will be sent to the lecturer
+                    if(message_list[i].rating < 5) {
+                        message_list[i].rating--;
+                    }
                 }
                 console.log(message_list[i].rating);
+
+                // find the socket the lecturer is on
+                var arr = io.sockets.clients();
+                for (var j = 0; j < arr.length; arr++) {
+                    var socket = arr[j];
+                    if (socket.lecturer) {
+                        if(message_list[i].rating === threshold && message_list[i].rating - 1 < threshold) {
+                            socket.emit('chat message', message_list[i]);
+                        }
+                    }
+                }
                 break;
             }
         }
+
     });
 
 });

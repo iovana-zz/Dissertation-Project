@@ -18,38 +18,49 @@ var ValE, ValA, Validation = {
         ValE.submit_button.click(Validation.submit_button_click);
         ValE.comment_buttons.click(Validation.button_click);
         ValA.socket.on('chat message', function (message) {
-            var element = Validation.create_jquery_object(message);
-            var message_object = {message: message, element: element};
-            var insert_position = ValA.comment_list.length;
-            var previous_comment = ValA.current_comment;
+            if (ValA.logged_in) {
+                var element = Validation.create_jquery_object(message);
+                var message_object = {message: message, element: element};
+                var insert_position = ValA.comment_list.length;
+                var previous_comment = ValA.current_comment;
 
-            // if there is no previous comment insert it in the container
-            if (previous_comment === null) {
-                ValE.comment_container.html(element);
-                ValA.comment_list.push(message_object);
-            } else {
-                // if there is a previous comment, find where to insert it and insert it
-                for (var i = ValA.comment_list.length - 1; i >= 0; --i) {
-                    if (message.timestamp > ValA.comment_list[i].message.timestamp) {
-                        insert_position = i + 1;
-                        ValA.comment_list.splice(insert_position, 0, message_object);
-                        $(ValA.comment_list[i].element).after(element);
-                        break;
+                // if there is no previous comment insert it in the container
+                if (previous_comment === null) {
+                    ValE.comment_container.html(element);
+                    ValA.comment_list.push(message_object);
+                } else {
+                    // if there is a previous comment, find where to insert it and insert it
+                    for (var i = ValA.comment_list.length - 1; i >= 0; --i) {
+                        if (message.timestamp > ValA.comment_list[i].message.timestamp) {
+                            insert_position = i + 1;
+                            ValA.comment_list.splice(insert_position, 0, message_object);
+                            $(ValA.comment_list[i].element).after(element);
+                            break;
+                        }
                     }
                 }
+                ValA.current_comment = ValA.comment_list[ValA.comment_list.length - 1].element;
             }
-            ValA.current_comment = ValA.comment_list[ValA.comment_list.length - 1].element;
         });
+
         // populate page with the history of messages
         ValA.socket.on('validated', function (message_list) {
-            console.log("POTATO");
             ValE.mainpage.toggle();
             ValE.login_page.toggle();
             ValE.comment_container.empty();
+            console.log("comment container: ");
+            console.log(ValE.comment_container.html());
             for (var i = 0; i < message_list.length; ++i) {
                 Validation.add_comment(message_list[i]);
+                console.log("message list contains: ");
+                console.log(message_list[i]);
             }
+            console.log("comment container after is: ");
+            console.log(ValE.comment_container.html());
+
             ValE.submit_button.disabled = false;
+            ValA.logged_in = true;
+
         });
     },
     elements: function () {
@@ -70,13 +81,14 @@ var ValE, ValA, Validation = {
     attributes: {
         current_comment: null,
         comment_list: [],
-        socket: io()
+        socket: io(),
+        logged_in: false
     },
 
     // check if message_field is valid and a tag is selected
     login_button_click: function () {
         var user_object = Validation.validate_login();
-        if(user_object !== false) {
+        if (user_object !== false) {
             ValA.socket.emit('login', user_object);
             ValE.submit_button.disabled = true;
         }
@@ -234,6 +246,7 @@ var ValE, ValA, Validation = {
         var new_comment = Validation.create_jquery_object(message);
         var message_object = {message: message, element: new_comment};
         ValA.comment_list.push(message_object);
+        console.log(ValA.current_comment);
         if (ValA.current_comment === null) {
             comments.html(new_comment);
         } else {
