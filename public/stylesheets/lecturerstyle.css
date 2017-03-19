@@ -1,29 +1,3 @@
-body {
-    background-color: #0E6EB8;
-}
-
-.column {
-    max-width: 450px;
-}
-
-body > .grid {
-    height: 100%;
-}
-
-.ui.comments.comment.text {
-    color: white;
-}
-
-#bottompanel {
-    margin: 0px;
-    margin: 40px;
-    margin-top:0px;
-}
-
-#mainheader {
-    bottom: 50px;
-}
-
 #mainpage {
     height: 100%;
     width: 100%;
@@ -35,6 +9,7 @@ body > .grid {
     float: left;
 }
 
+
 #rightpanel {
     height: 100%;
     width: 88%;
@@ -45,24 +20,22 @@ body > .grid {
     height: 85%;
     top: 0px;
     margin: 0px;
-    padding: 40px;
+    margin-left: 30px;
+
 }
 
 #commentfield {
-    width: 100%;
-    height: 100%;
+    margin-left: 50px;
 }
 
 #submit_button {
-    margin: 0px;
+    /*width: 60%;*/
     position: relative;
     top: 50%;
     left: 50%;
+    margin-left: 20px;
+    /*margin-right: -50%;*/
     transform: translate(-50%, -50%)
-}
-
-.comment * {
-    color: white;
 }
 
 * {
@@ -71,22 +44,14 @@ body > .grid {
     overflow: hidden;
 }
 
-#submit_button_container {
-    margin-bottom: 14px;
-    background-color: transparent;
-    box-shadow: none;
-}
-
 #message_field {
     resize: none;
-    height: 100%;
 }
 
 .comment_type {
     margin: 0px;
     padding: 0px;
 }
-
 .ui.button.icon.star_button {
     width: 50px;
     height: 100%;
@@ -108,12 +73,4 @@ body > .grid {
 
 .ui.large.comments {
     width: 100%;
-}
-
-.golden_button {
-    color: gold;
-}
-
-.grey_button {
-    color: grey;
 }

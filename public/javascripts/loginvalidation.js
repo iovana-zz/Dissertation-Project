@@ -48,8 +48,11 @@ var ValE, ValA, Validation = {
             ValE.login_page.toggle();
             ValE.comment_container.empty();
             for (var i = 0; i < message_list.length; ++i) {
+                console.log(message_list[i].raters);
                 Validation.add_comment(message_list[i]);
             }
+            // if the user is in the list of voters find the div of the comment and make it gold
+
             ValE.submit_button.disabled = false;
             ValA.logged_in = true;
         });
@@ -216,6 +219,7 @@ var ValE, ValA, Validation = {
                 '</div>' +
                 '<div class="text comment_text"><p>' + message.message + '</p></div></div></div>');
         } else {
+            // author automatically votes for own comment
             new_comment = $('<div class="comment">' +
                 '<div class="content">' +
                 '<div class="metadata">' +
@@ -244,7 +248,5 @@ var ValE, ValA, Validation = {
             ValA.current_comment.after(new_comment);
         }
         ValA.current_comment = new_comment;
-        // return comment_object;
     }
-
 };

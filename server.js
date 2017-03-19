@@ -5,7 +5,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var pg = require('pg'); // postgresql database
 var message_list = [];
-var threshold = 2;
+var threshold = 5;
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
@@ -96,6 +96,7 @@ io.on('connection', function (socket) {
                         console.log("user unvoted " + voter);
                     }
                 }
+                // get the socket for all connected clients
                 for (var other_socket in io.of('/').connected) {
                     other_socket = io.of('/').connected[other_socket];
                     if (other_socket.lecturer) {
