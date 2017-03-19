@@ -1,18 +1,19 @@
+// listen for connection
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var pg = require('pg'); // postgresql database
 var message_list = [];
-var threshold = 5;
+var threshold = 2;
 app.use(express.static('public'));
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
 
-// listen for connection
 io.on('connection', function (socket) {
+    socket.lecturer = false;
     console.log('Client connected...');
     socket.on('chat message', function (msg) {
         var insert_position = 0;
@@ -24,23 +25,28 @@ io.on('connection', function (socket) {
         }
         message_list.splice(insert_position, 0, msg);
 
-        socket.broadcast.emit('chat message', msg);
+        for (var other_socket in io.of('/').connected) {
+            other_socket = io.of('/').connected[other_socket];
+            if (other_socket.lecturer == false && other_socket.id !== socket.id) {
+                other_socket.emit('chat message', msg);
+            }
+        }
     });
     socket.on('login', function (login_details) {
         var name = login_details.username;
         var key = login_details.password;
         pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+            // lecturer has username and password assigned beforehand
             // select the username and the password if they exist
             var sql = 'SELECT username, password FROM user_table WHERE username=$1 AND password=$2;';
             var params = [name, key];
-            // lecturer has username and password assigned beforehand
             client.query(sql, params, function (err, result) {
                 done();
                 if (err) {
+                    // only send messages with threshold
                     console.error(err);
                 } else {
                     var messages_to_send = [];
-                    // only send messages with threshold
                     if (name === "lecturer" && key === "comp-module") {
                         socket.lecturer = true;
                         for (var i = 0; i < message_list.length; i++) {
@@ -50,7 +56,6 @@ io.on('connection', function (socket) {
                             }
                         }
                     } else {
-                        socket.lecturer = false;
                         messages_to_send = message_list;
                     }
                     if (result.rowCount === 0) {
@@ -73,26 +78,25 @@ io.on('connection', function (socket) {
     });
 
 
-    socket.on('vote', function (timestamp, author, upvote) {
+    socket.on('vote', function (timestamp, author, upvote, voter) {
         // find message in the list
         for (var i = 0; i < message_list.length; i++) {
             if (message_list[i].author === author && message_list[i].timestamp === timestamp) {
                 // check if the event is to upvote or downvote
-                if (upvote) {
+                if (upvote && message_list[i].raters.indexOf(voter) === -1) {
                     message_list[i].rating++;
                 } else {
                     // if a message reached the threshold the message will be sent to the lecturer
-                    if(message_list[i].rating < 5) {
+                    if (message_list[i].rating < threshold && message_list[i].raters.indexOf(voter) !== -1) {
                         message_list[i].rating--;
+                        message_list[i].raters.splice(message_list[i].raters.indexOf(voter), 1);
                     }
                 }
-                // find the socket the lecturer is on
-                var arr = io.sockets.clients();
-                for (var j = 0; j < arr.length; arr++) {
-                    var socket = arr[j];
-                    if (socket.lecturer) {
-                        if(message_list[j].rating === threshold && message_list[j].rating - 1 < threshold) {
-                            socket.emit('chat message', message_list[j]);
+                for (var other_socket in io.of('/').connected) {
+                    other_socket = io.of('/').connected[other_socket];
+                    if (other_socket.lecturer) {
+                        if (message_list[i].rating === threshold && message_list[i].rating - 1 < threshold) {
+                            other_socket.emit('chat message', message_list[i]);
                         }
                     }
                 }

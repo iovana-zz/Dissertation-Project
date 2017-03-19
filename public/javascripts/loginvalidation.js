@@ -172,7 +172,8 @@ var ValE, ValA, Validation = {
             message_type: type,
             timestamp: timestamp,
             author: author,
-            rating: 0
+            rating: 0,
+            raters: [author]
         };
         ValA.socket.emit('chat message', message_object);
         return message_object;
@@ -181,10 +182,10 @@ var ValE, ValA, Validation = {
     // find corresponding message, send to server and then either upvote or downvote
     upvote_button: function (button, timestamp, author) {
         if ($(button).hasClass("grey_button")) {
-            ValA.socket.emit('vote', timestamp, author, true);
+            ValA.socket.emit('vote', timestamp, author, true, ValE.username_field.val());
         }
         else if ($(button).hasClass("golden_button")) {
-            ValA.socket.emit('vote', timestamp, author, false);
+            ValA.socket.emit('vote', timestamp, author, false, ValE.username_field.val());
         }
 
         $(button).toggleClass("golden_button");
