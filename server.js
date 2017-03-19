@@ -31,7 +31,7 @@ io.on('connection', function (socket) {
         var key = login_details.password;
         pg.connect(process.env.DATABASE_URL, function (err, client, done) {
             // select the username and the password if they exist
-            var sql = 'SELECT username, password FROM user_table WHERE username=$1 AND password=$2;'
+            var sql = 'SELECT username, password FROM user_table WHERE username=$1 AND password=$2;';
             var params = [name, key];
             // lecturer has username and password assigned beforehand
             client.query(sql, params, function (err, result) {
@@ -51,15 +51,11 @@ io.on('connection', function (socket) {
                         }
                     } else {
                         socket.lecturer = false;
-                        console.log("message list contains: ");
-                        console.log(message_list);
                         messages_to_send = message_list;
                     }
                     if (result.rowCount === 0) {
                         insert_user(client);
                     }
-                    console.log("messages to send are:");
-                    console.log(messages_to_send);
                     socket.emit('validated', messages_to_send);
                 }
             });
@@ -78,7 +74,6 @@ io.on('connection', function (socket) {
 
 
     socket.on('vote', function (timestamp, author, upvote) {
-        console.log(author + " " + timestamp + " " + upvote);
         // find message in the list
         for (var i = 0; i < message_list.length; i++) {
             if (message_list[i].author === author && message_list[i].timestamp === timestamp) {
@@ -91,15 +86,13 @@ io.on('connection', function (socket) {
                         message_list[i].rating--;
                     }
                 }
-                console.log(message_list[i].rating);
-
                 // find the socket the lecturer is on
                 var arr = io.sockets.clients();
                 for (var j = 0; j < arr.length; arr++) {
                     var socket = arr[j];
                     if (socket.lecturer) {
-                        if(message_list[i].rating === threshold && message_list[i].rating - 1 < threshold) {
-                            socket.emit('chat message', message_list[i]);
+                        if(message_list[j].rating === threshold && message_list[j].rating - 1 < threshold) {
+                            socket.emit('chat message', message_list[j]);
                         }
                     }
                 }

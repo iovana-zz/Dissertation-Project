@@ -42,25 +42,16 @@ var ValE, ValA, Validation = {
                 ValA.current_comment = ValA.comment_list[ValA.comment_list.length - 1].element;
             }
         });
-
         // populate page with the history of messages
         ValA.socket.on('validated', function (message_list) {
             ValE.mainpage.toggle();
             ValE.login_page.toggle();
             ValE.comment_container.empty();
-            console.log("comment container: ");
-            console.log(ValE.comment_container.html());
             for (var i = 0; i < message_list.length; ++i) {
                 Validation.add_comment(message_list[i]);
-                console.log("message list contains: ");
-                console.log(message_list[i]);
             }
-            console.log("comment container after is: ");
-            console.log(ValE.comment_container.html());
-
             ValE.submit_button.disabled = false;
             ValA.logged_in = true;
-
         });
     },
     elements: function () {
@@ -246,7 +237,6 @@ var ValE, ValA, Validation = {
         var new_comment = Validation.create_jquery_object(message);
         var message_object = {message: message, element: new_comment};
         ValA.comment_list.push(message_object);
-        console.log(ValA.current_comment);
         if (ValA.current_comment === null) {
             comments.html(new_comment);
         } else {
@@ -256,4 +246,4 @@ var ValE, ValA, Validation = {
         // return comment_object;
     }
 
-}
+};
