@@ -209,21 +209,21 @@ var ValE, ValA, Validation = {
         if (comment_type === "comment") {
             new_comment = $('<div class="comment">' +
                 '<div class="content">' +
-                '<a class="author comment_username">' + author + '</a>' +
                 '<div class="metadata">' +
+                '<div class="author"><b>' + author + '</b></div>' +
                 '<span class="date">' + today + "   " + time + '</span>' +
                 '<div>' + comment_type + '</div>' +
                 '</div>' +
-                '<div class="text comment_text">' + message.message + '</div></div></div>');
+                '<div class="text comment_text"><p>' + message.message + '</p></div></div></div>');
         } else {
             new_comment = $('<div class="comment">' +
                 '<div class="content">' +
-                '<a class="author comment_username">' + author + '</a>' +
                 '<div class="metadata">' +
+                '<div class="author"><b>' + author + '</b></div>' +
                 '<span class="date">' + today + "   " + time + '</span>' +
                 '<div class="rating"></div>' +
                 '<div>' + comment_type + '</div></div>' +
-                '<div class="text comment_text">' + message.message + '</div></div>' +
+                '<div class="text comment_text"><p>' + message.message + '</p></div></div>' +
                 '<div class="ui button icon star_button">' +
                 '<i class="icon star big grey_button" onclick="Validation.upvote_button(this,' + message.timestamp + ',\'' + author.toString() + '\')"></i>' +
                 '</div></div>');

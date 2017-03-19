@@ -85,11 +85,15 @@ io.on('connection', function (socket) {
                 // check if the event is to upvote or downvote
                 if (upvote && message_list[i].raters.indexOf(voter) === -1) {
                     message_list[i].rating++;
+                    message_list[i].raters.push(voter);
+                    console.log("user voted " + voter);
                 } else {
+                    console.log("user already voted " + voter);
                     // if a message reached the threshold the message will be sent to the lecturer
                     if (message_list[i].rating < threshold && message_list[i].raters.indexOf(voter) !== -1) {
                         message_list[i].rating--;
                         message_list[i].raters.splice(message_list[i].raters.indexOf(voter), 1);
+                        console.log("user unvoted " + voter);
                     }
                 }
                 for (var other_socket in io.of('/').connected) {
