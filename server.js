@@ -12,19 +12,61 @@ app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
 
+// insert the previously stored message in the message list
+pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+    var sql = 'SELECT json_message FROM json_message_table;';
+    client.query(sql, function (err, result) {
+            done();
+            if (err) {
+                console.error(err);
+            } else {
+                // for (var i = 0; i < result.rowCount; i++) {
+                    console.log("the rows of the database are: "+ result.rows);
+                    console.log("json object after parse is: ");
+                    console.log(JSON.parse(result.rows));
+                    var msg = JSON.parse(result.rows);
+                    insert_message_into_list(msg);
+                // }
+            }
+
+        }
+    );
+});
+
+// insert message into list according to the timestamp
+function insert_message_into_list(msg) {
+    var insert_position = 0;
+    for (var i = message_list.length - 1; i >= 0; --i) {
+        if (msg.timestamp > message_list[i].timestamp) {
+            insert_position = i + 1;
+            break;
+        }
+    }
+    message_list.splice(insert_position, 0, msg);
+}
+
+// insert the json message in the database
+function insert_message_into_database(message) {
+    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+        var sql = 'INSERT INTO json_message_table (json_message) VALUES ($1)';
+        var message_to_json = JSON.stringify(message);
+        var params = [message_to_json];
+        client.query(sql, params, function (err, result) {
+            done();
+            if (err) {
+                console.error(err);
+            }
+        });
+    });
+}
+
 io.on('connection', function (socket) {
     socket.lecturer = false;
     console.log('Client connected...');
     socket.on('chat message', function (msg) {
-        var insert_position = 0;
-        for (var i = message_list.length - 1; i >= 0; --i) {
-            if (msg.timestamp > message_list[i].timestamp) {
-                insert_position = i + 1;
-                break;
-            }
-        }
-        message_list.splice(insert_position, 0, msg);
-
+        insert_message_into_list(msg);
+        // insert_message_into_database(client, msg);
+        insert_message_into_database(msg);
         for (var other_socket in io.of('/').connected) {
             other_socket = io.of('/').connected[other_socket];
             if (other_socket.lecturer == false && other_socket.id !== socket.id) {
@@ -64,6 +106,7 @@ io.on('connection', function (socket) {
                     socket.emit('validated', messages_to_send);
                 }
             });
+
             function insert_user(client) {
                 sql = 'INSERT INTO user_table (username, password) VALUES ($1, $2)';
                 params = [name, key];
