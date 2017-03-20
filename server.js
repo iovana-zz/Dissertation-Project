@@ -34,7 +34,7 @@ pg.connect(process.env.DATABASE_URL, function (err, client, done) {
 function insert_message_into_list(message) {
     var insert_position = 0;
     for (var i = message_list.length - 1; i >= 0; --i) {
-        if (messageg.timestamp > message_list[i].timestamp) {
+        if (message.timestamp > message_list[i].timestamp) {
             insert_position = i + 1;
             break;
         }
