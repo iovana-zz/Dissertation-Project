@@ -6,8 +6,8 @@ var io = require('socket.io')(http);
 var pg = require('pg'); // postgresql database
 var message_list = [];
 var threshold = 5;
-app.use(express.static('public'));
 
+app.use(express.static('public'));
 app.get('/', function (req, res) {
     res.sendFile(__dirname + "/" + "public/loginpage.html");
 });
@@ -149,11 +149,11 @@ io.on('connection', function (socket) {
 
 });
 
-app.listen(process.env.PORT || 3000, function(){
-    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-});
-
-// var port = process.env.PORT || 8080;
-// http.listen(port, function () {
-//     console.log('Running on http://localhost:' + port);
+// app.listen(process.env.PORT || 3000, function(){
+//     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 // });
+//
+var port = process.env.PORT || 8080;
+http.listen(port, function () {
+    console.log('Running on http://localhost:' + port);
+});
