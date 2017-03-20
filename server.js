@@ -21,9 +21,6 @@ pg.connect(process.env.DATABASE_URL, function (err, client, done) {
                 console.error(err);
             } else {
                 for (var i = 0; i < result.rowCount; i++) {
-                    console.log("the rows of the database are: ");
-                    console.log(result.rows[0]);
-                    console.log("json object after parse is: ");
                     var message = result.rows[i].json_message;
                     insert_message_into_list(message);
                 }
@@ -128,14 +125,11 @@ io.on('connection', function (socket) {
                 if (upvote && message_list[i].raters.indexOf(voter) === -1) {
                     message_list[i].rating++;
                     message_list[i].raters.push(voter);
-                    console.log("user voted " + voter);
                 } else {
-                    console.log("user already voted " + voter);
                     // if a message reached the threshold the message will be sent to the lecturer
                     if (message_list[i].rating < threshold && message_list[i].raters.indexOf(voter) !== -1) {
                         message_list[i].rating--;
                         message_list[i].raters.splice(message_list[i].raters.indexOf(voter), 1);
-                        console.log("user unvoted " + voter);
                     }
                 }
                 // get the socket for all connected clients
@@ -155,7 +149,11 @@ io.on('connection', function (socket) {
 
 });
 
-var port = process.env.PORT || 8080;
-http.listen(port, function () {
-    console.log('Running on http://localhost:' + port);
+app.listen(process.env.PORT || 3000, function(){
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
 });
+
+// var port = process.env.PORT || 8080;
+// http.listen(port, function () {
+//     console.log('Running on http://localhost:' + port);
+// });

@@ -48,7 +48,6 @@ var ValE, ValA, Validation = {
             ValE.login_page.toggle();
             ValE.comment_container.empty();
             for (var i = 0; i < message_list.length; ++i) {
-                console.log(message_list[i].raters);
                 Validation.add_comment(message_list[i]);
             }
 
