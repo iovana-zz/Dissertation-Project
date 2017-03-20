@@ -20,13 +20,13 @@ pg.connect(process.env.DATABASE_URL, function (err, client, done) {
             if (err) {
                 console.error(err);
             } else {
-                // for (var i = 0; i < result.rowCount; i++) {
-                    console.log("the rows of the database are: "+ result.rows);
+                for (var i = 0; i < result.rowCount; i++) {
+                    console.log("the rows of the database are: ");
+                    console.log(result.rows[0]);
                     console.log("json object after parse is: ");
-                    console.log(JSON.parse(result.rows));
-                    var msg = JSON.parse(result.rows);
-                    insert_message_into_list(msg);
-                // }
+                    var message = result.rows[i].json_message;
+                    insert_message_into_list(message);
+                }
             }
 
         }
@@ -34,15 +34,15 @@ pg.connect(process.env.DATABASE_URL, function (err, client, done) {
 });
 
 // insert message into list according to the timestamp
-function insert_message_into_list(msg) {
+function insert_message_into_list(message) {
     var insert_position = 0;
     for (var i = message_list.length - 1; i >= 0; --i) {
-        if (msg.timestamp > message_list[i].timestamp) {
+        if (messageg.timestamp > message_list[i].timestamp) {
             insert_position = i + 1;
             break;
         }
     }
-    message_list.splice(insert_position, 0, msg);
+    message_list.splice(insert_position, 0, message);
 }
 
 // insert the json message in the database
@@ -63,14 +63,13 @@ function insert_message_into_database(message) {
 io.on('connection', function (socket) {
     socket.lecturer = false;
     console.log('Client connected...');
-    socket.on('chat message', function (msg) {
-        insert_message_into_list(msg);
-        // insert_message_into_database(client, msg);
-        insert_message_into_database(msg);
+    socket.on('chat message', function (message) {
+        insert_message_into_list(message);
+        insert_message_into_database(message);
         for (var other_socket in io.of('/').connected) {
             other_socket = io.of('/').connected[other_socket];
             if (other_socket.lecturer == false && other_socket.id !== socket.id) {
-                other_socket.emit('chat message', msg);
+                other_socket.emit('chat message', message);
             }
         }
     });
