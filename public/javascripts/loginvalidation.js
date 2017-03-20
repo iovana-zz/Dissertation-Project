@@ -39,6 +39,8 @@ var ValE, ValA, Validation = {
                         }
                     }
                 }
+                $(ValE.comment_container).animate({ scrollTop: $(ValE.comment_container).height() }, 0);
+
                 ValA.current_comment = ValA.comment_list[ValA.comment_list.length - 1].element;
             }
         });
@@ -213,28 +215,26 @@ var ValE, ValA, Validation = {
         var time = message.hour + ":" + minutes;
 
         var today = day + '/' + month + '/' + message.year;
+        var text = " made a comment at ";
+        if(comment_type === "question") {
+            text = " asked a question at ";
+        } else if(comment_type === "feedback ") {
+            text = " offered some feedback at ";
+        }
         if (comment_type === "comment") {
             new_comment = $('<div class="comment">' +
                 '<div class="content">' +
-                '<div class="metadata">' +
-                '<div class="author"><b>' + author + '</b></div>' +
-                '<span class="date">' + today + "   " + time + '</span>' +
-                '<div>' + comment_type + '</div>' +
-                '</div>' +
-                '<div class="text comment_text"><p>' + message.message + '</p></div></div></div>');
+                '<div class="author"><b>' + author + '</b>' + text + today + "   "  + time + '</div>' +
+                '<div class="text comment_text"><p>' + message.message + '</p></div></div>');
         } else {
             // author automatically votes for own comment
             new_comment = $('<div class="comment">' +
                 '<div class="content">' +
-                '<div class="metadata">' +
-                '<div class="author"><b>' + author + '</b></div>' +
-                '<span class="date">' + today + "   " + time + '</span>' +
-                '<div class="rating"></div>' +
-                '<div>' + comment_type + '</div></div>' +
+                '<div class="author"><b>' + author + '</b>' + text + today + "   "  + time + '</div>' +
                 '<div class="text comment_text"><p>' + message.message + '</p></div></div>' +
                 '<div class="ui button icon star_button">' +
                 '<i class="icon star big grey_button" onclick="Validation.upvote_button(this,' + message.timestamp + ',\'' + author.toString() + '\')"></i>' +
-                '</div></div>');
+                '</div>');
         }
         return new_comment;
     },
@@ -256,6 +256,8 @@ var ValE, ValA, Validation = {
         } else {
             ValA.current_comment.after(new_comment);
         }
+        $(ValE.comment_container).animate({ scrollTop: $(ValE.comment_container).height() }, 0);
+
         ValA.current_comment = new_comment;
     }
 };

@@ -75,6 +75,7 @@ body > .grid {
     margin-bottom: 14px;
     background-color: transparent;
     box-shadow: none;
+    border: none;
 }
 
 #message_field {
@@ -88,14 +89,14 @@ body > .grid {
 }
 
 .ui.button.icon.star_button {
-    width: 50px;
+    width: 60px;
     height: 100%;
     margin: 0px;
     padding: 10px;
 }
 
 .content {
-    width: calc(100% - 50px);
+    width: calc(100% - 60px);
     height: 100%;
     float: left;
     margin: 0px;
@@ -116,4 +117,14 @@ body > .grid {
 
 .grey_button {
     color: grey;
+}
+
+/*scroll*/
+#comment_list {
+    overflow-y: auto;
+    width: 100%;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+
 }
