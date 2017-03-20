@@ -51,7 +51,7 @@ var ValE, ValA, Validation = {
                 console.log(message_list[i].raters);
                 Validation.add_comment(message_list[i]);
             }
-            // if the user is in the list of voters find the div of the comment and make it gold
+
 
             ValE.submit_button.disabled = false;
             ValA.logged_in = true;
@@ -196,7 +196,7 @@ var ValE, ValA, Validation = {
     },
 
     create_jquery_object: function (message) {
-        var time = message.hour + ":" + message.minutes;
+        var minutes = message.minutes;
         var day = message.day;
         var month = message.month;
         var comment_type = message.message_type;
@@ -208,6 +208,11 @@ var ValE, ValA, Validation = {
         if (month < 10) {
             month = '0' + month;
         }
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        var time = message.hour + ":" + minutes;
+
         var today = day + '/' + month + '/' + message.year;
         if (comment_type === "comment") {
             new_comment = $('<div class="comment">' +
@@ -231,7 +236,6 @@ var ValE, ValA, Validation = {
                 '<div class="ui button icon star_button">' +
                 '<i class="icon star big grey_button" onclick="Validation.upvote_button(this,' + message.timestamp + ',\'' + author.toString() + '\')"></i>' +
                 '</div></div>');
-
         }
         return new_comment;
     },
@@ -242,6 +246,12 @@ var ValE, ValA, Validation = {
         var new_comment = Validation.create_jquery_object(message);
         var message_object = {message: message, element: new_comment};
         ValA.comment_list.push(message_object);
+        var username = ValE.username_field.val();
+
+        // if the user is in the list of voters find the div of the comment and make it gold
+        if(message.raters.indexOf(username) !== -1) {
+            new_comment.find("i").removeClass("grey_button").addClass("golden_button");
+        }
         if (ValA.current_comment === null) {
             comments.html(new_comment);
         } else {
