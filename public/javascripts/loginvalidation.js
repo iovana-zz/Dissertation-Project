@@ -117,6 +117,7 @@ var ValE, ValA, Validation = {
     // validate message_field by length
     validate_comment: function () {
         var text = ValE.comment_field.val();
+        text = html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         if (text.length < 2) {
             console.log("Message too short.");
             return false;
