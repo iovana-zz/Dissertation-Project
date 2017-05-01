@@ -1,5 +1,0 @@
-1. testing - unit test
-- then evaluation - methodology, design, results etc
-
-reflect on management - after background: project planing 
-Conclusion: project reflection

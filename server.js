@@ -25,7 +25,6 @@ pg.connect(process.env.DATABASE_URL, function (err, client, done) {
                     insert_message_into_list(message);
                 }
             }
-
         }
     );
 });
@@ -149,10 +148,6 @@ io.on('connection', function (socket) {
 
 });
 
-// app.listen(process.env.PORT || 3000, function(){
-//     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
-// });
-//
 var port = process.env.PORT || 8080;
 http.listen(port, function () {
     console.log('Running on http://localhost:' + port);

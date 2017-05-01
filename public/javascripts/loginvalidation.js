@@ -93,8 +93,8 @@ var ValE, ValA, Validation = {
     validate_login: function () {
         var username = ValE.username_field.val();
         var password = ValE.password_field.val();
-        username = username.replace(/</g, "please don't inject html here").replace(/>/g, "please don't inject html here");
-        password = password.replace(/</g, "please don't inject html here").replace(/>/g, "please don't inject html here");
+        username = username.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        password = password.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         var user = {username: username, password: password};
 
         if (password.length < 2 || username.length < 2) {
@@ -119,7 +119,7 @@ var ValE, ValA, Validation = {
     // validate message_field by length
     validate_comment: function () {
         var text = ValE.comment_field.val();
-        text = text.replace(/</g, "please don't inject html here").replace(/>/g, "please don't inject html here");
+        text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         if (text.length < 2) {
             console.log("Message too short.");
             return false;
